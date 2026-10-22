@@ -520,16 +520,20 @@ function wAction(a,id){
 
 
 /* ---------- 選んだ文字を別の吹き出しに / 上につなぐ ---------- */
-var SB=$('#selbar'),undoSnap=null,undoTm=0;
+var SB=$('#selbar'),undoSnap=null,undoTm=0,lastTA=null,sbKey='';
 function activeTA(){var a=document.activeElement;return a&&a.tagName==='TEXTAREA'&&a.closest('.bx')?a:null}
+function curTA(){var a=activeTA();if(a)return a;return lastTA&&document.body.contains(lastTA)?lastTA:null}
 function sbPos(){var vv=window.visualViewport,h=SB.offsetHeight;SB.style.top=((vv?vv.offsetTop+vv.height:window.innerHeight)-h)+'px'}
+function sbHide(){SB.style.display='none';sbKey=''}
 function sbRender(){
  document.querySelectorAll('[data-a=split]').forEach(function(x){x.style.display='none'});
- if(undoSnap){SB.innerHTML='<span class="sbm">'+undoSnap.label+'</span><button class="g2" data-sb="undo">↩ 元に戻す</button>';SB.style.display='flex';sbPos();return}
- var ta=activeTA();if(!ta){SB.style.display='none';return}
+ var key;
+ if(undoSnap){key='u'+undoSnap.label;if(key!==sbKey){SB.innerHTML='<span class="sbm">'+undoSnap.label+'</span><button class="g2" data-sb="undo">↩ 元に戻す</button>';sbKey=key}SB.style.display='flex';sbPos();return}
+ var ta=activeTA();if(!ta){sbHide();return}
  var row=ta.closest('.bl'),i=+row.dataset.i,has=ta.selectionEnd>ta.selectionStart;
  var ib=row.querySelector('[data-a=split]');if(ib&&has)ib.style.display='';
- SB.innerHTML='<button class="go'+(has?'':' off')+'" data-sb="split">✂ '+(has?'別の吹き出しに':'文字を選ぶと分けられます')+'</button>'+(i>0?'<button class="g2" data-sb="merge">↑ 上につなぐ</button>':'');
+ key='t'+i+(has?1:0);
+ if(key!==sbKey){SB.innerHTML='<button class="go'+(has?'':' off')+'" data-sb="split">✂ '+(has?'別の吹き出しに':'文字を選ぶと分けられます')+'</button>'+(i>0?'<button class="g2" data-sb="merge">↑ 上につなぐ</button>':'');sbKey=key}
  SB.style.display='flex';sbPos()}
 function snapPage(p,label){clearTimeout(undoTm);undoSnap={n:p.n,bl:JSON.parse(JSON.stringify(p.bl)),label:label};undoTm=setTimeout(function(){undoSnap=null;sbRender()},7000)}
 function redrawPage(p){var c=$('#p'+p.n);if(c)c.outerHTML=cardHTML(p);autoGrow()}
@@ -542,18 +546,25 @@ function doSplit(ta){
  snapPage(p,'分けました');
  var nb=parts.map(function(t,k){return k===0?Object.assign(b,{t:t,ed:true}):{t:t,star:false,rem:'',cry:false,cont:false,warn:'',ed:true,split:true}});
  p.bl.splice.apply(p.bl,[i,1].concat(nb));
- ta.blur();save();redrawPage(p);sbRender()}
+ ta.blur();lastTA=null;save();redrawPage(p);sbRender()}
 function doMerge(ta){
  var p=pageOf(ta),row=ta.closest('.bl');if(!p||!row)return;var i=+row.dataset.i;if(i<1)return;
  p.bl[i].t=ta.value;snapPage(p,'つなぎました');
  var prev=p.bl[i-1];prev.t=prev.t.replace(/\s+$/,'')+'\n'+p.bl[i].t.replace(/^\s+/,'');prev.ed=true;p.bl.splice(i,1);
- ta.blur();save();redrawPage(p);sbRender()}
+ ta.blur();lastTA=null;save();redrawPage(p);sbRender()}
 function doUndo(){if(!undoSnap)return;var p=pages.filter(function(x){return x.n===undoSnap.n})[0];if(p){p.bl=undoSnap.bl;save();redrawPage(p)}clearTimeout(undoTm);undoSnap=null;sbRender()}
-['mousedown','touchstart'].forEach(function(ev){SB.addEventListener(ev,function(e){e.preventDefault()},{passive:false});$('#list').addEventListener(ev,function(e){if(e.target.closest('[data-a=split]'))e.preventDefault()},{passive:false})});
-SB.addEventListener('click',function(e){var b=e.target.closest('[data-sb]');if(!b)return;var k=b.dataset.sb;if(k==='undo'){doUndo();return}var ta=activeTA();if(!ta)return;if(k==='split')doSplit(ta);else if(k==='merge')doMerge(ta)});
+/* タップは touchend で受ける(touchstartで止めるとiOSではclickが来ない)。押しても入力欄のフォーカスと選択を失わないよう mousedown だけ止める */
+function tapBind(el,sel,fn){var sx=0,sy=0,mv=false,lt=0;
+ el.addEventListener('mousedown',function(e){if(e.target.closest(sel))e.preventDefault()});
+ el.addEventListener('touchstart',function(e){var t=e.touches[0];sx=t.clientX;sy=t.clientY;mv=false},{passive:true});
+ el.addEventListener('touchmove',function(e){var t=e.touches[0];if(Math.abs(t.clientX-sx)>10||Math.abs(t.clientY-sy)>10)mv=true},{passive:true});
+ el.addEventListener('touchend',function(e){var b=e.target.closest(sel);if(!b||mv)return;e.preventDefault();lt=Date.now();fn(b)});
+ el.addEventListener('click',function(e){var b=e.target.closest(sel);if(!b||Date.now()-lt<600)return;fn(b)})}
+tapBind(SB,'[data-sb]',function(b){var k=b.dataset.sb;if(k==='undo'){doUndo();return}var ta=curTA();if(!ta)return;if(k==='split')doSplit(ta);else if(k==='merge')doMerge(ta)});
+tapBind($('#list'),'[data-a=split]',function(b){var ta=b.closest('.bl').querySelector('textarea');doSplit(ta)});
 document.addEventListener('selectionchange',function(){if(!undoSnap)sbRender()});
-document.addEventListener('focusin',function(){if(!undoSnap)sbRender()});
-document.addEventListener('focusout',function(){setTimeout(function(){if(!undoSnap&&!activeTA())sbRender()},150)});
+document.addEventListener('focusin',function(e){if(e.target.tagName==='TEXTAREA')lastTA=e.target;if(!undoSnap)sbRender()});
+document.addEventListener('focusout',function(){setTimeout(function(){if(!undoSnap&&!activeTA())sbHide()},400)});
 if(window.visualViewport){['resize','scroll'].forEach(function(ev){window.visualViewport.addEventListener(ev,function(){if(SB.style.display!=='none')sbPos()})})}
 
 /* ---------- イベント ---------- */
@@ -565,7 +576,6 @@ $('#list').addEventListener('click',function(e){
  var a=t.closest('[data-a]');if(!a)return;var p=pageOf(a);if(!p)return;var k=a.dataset.a;
  if(k==='copy'){copy(pageCopyText(p),'P'+p.n+'のセリフをコピーしました')}
  else if(k==='cb'){var i=+a.closest('.bl').dataset.i;copy(p.bl[i].t,'このフキダシをコピーしました')}
- else if(k==='split'){var ta2=a.closest('.bl').querySelector('textarea');doSplit(ta2)}
  else if(k==='memo'){genMemo(p)}
  else if(k==='reset'){p.bl=buildBalloons(p.text);save();var c=$('#p'+p.n);c.outerHTML=cardHTML(p);autoGrow()}});
 var sv;
@@ -581,7 +591,7 @@ $('#list').addEventListener('input',function(e){
  if(!card.querySelector('[data-a=reset]')){var cp=card.querySelector('.ch .cp'),btn=document.createElement('button');btn.className='mini';btn.dataset.a='reset';btn.textContent='元に戻す';card.querySelector('.ch').insertBefore(btn,cp)}
  clearTimeout(sv);sv=setTimeout(save,500)});
 $('#pgs').addEventListener('click',function(e){var c=e.target.closest('.pgc');if(!c)return;var el=document.querySelector('#list [data-n="'+c.dataset.n+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})});
-$('#tabs').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(!b||b.dataset.t===ui.tab)return;ui.tab=b.dataset.t;render();window.scrollTo(0,0)});
+$('#tabs').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(!b||b.dataset.t===ui.tab)return;undoSnap=null;sbHide();ui.tab=b.dataset.t;render();window.scrollTo(0,0)});
 $('#bBack').addEventListener('click',goHome);
 $('#banner').addEventListener('click',function(e){if(e.target.id==='bSeen'){pages.forEach(function(p){p.chg=false});save();render()}});
 $('#bAll').addEventListener('click',function(){
