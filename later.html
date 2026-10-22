@@ -127,6 +127,12 @@ main{padding-bottom:150px}
 .chip.ci{opacity:.62}.chip.ci.ctr{transform:scale(1.22);opacity:1;z-index:2}
 .chip.ci.cur .ico{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--c)}
 #clab{transition:opacity .12s;height:20px;text-align:center;font-size:13px;font-weight:800;color:var(--text);margin-bottom:6px;white-space:nowrap}
+#clab:empty{display:none}
+.chips{padding-bottom:40px!important;gap:14px!important}
+.chip.ci{overflow:visible}
+.chip.ci .lb2{position:absolute;left:50%;top:calc(100% + 4px);transform:translateX(-50%);width:54px;text-align:center;font-size:9.5px;line-height:1.22;font-weight:600;color:var(--muted);opacity:.75;pointer-events:none;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:opacity .12s}
+.chip.ci.cur .lb2{top:calc(100% + 9px);width:auto;max-width:110px;white-space:nowrap;font-size:12.5px;font-weight:800;color:var(--text);opacity:1;display:block;text-overflow:ellipsis}
+.chip.ci.cur[data-ln="1"]+.chip.ci .lb2,.chip.ci:has(+.chip.ci.cur[data-ln="1"]) .lb2{opacity:0}
 #clab small{font-weight:600;color:var(--muted);margin-left:6px;font-size:11px}
 /* ダイヤル風カテゴリ */
 .chips{gap:12px;padding-top:12px;padding-bottom:11px}
@@ -679,7 +685,7 @@ var IC_ALL='<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke
 var ps=0,cscT=null,touching=false;
 function chipName(id){return id==='all'?'すべて':id==='cal'?'カレンダー':(cat(id).n||'')}
 var labT=null,labId=null;
-function setLab(id,now){var l=$('#clab');if(!l)return;clearTimeout(labT);var f=function(){if(labId===id&&l.dataset.k===(ui.star?'1':'0'))return;labId=id;l.dataset.k=ui.star?'1':'0';l.style.opacity=1;l.innerHTML=esc(chipName(id))+(ui.star?'<small>★重要のみ</small>':'')};if(now){f();return}l.style.opacity=.35;labT=setTimeout(f,90)}
+function setLab(id,now){var l=$('#clab');if(!l)return;clearTimeout(labT);var f=function(){if(labId===id&&l.dataset.k===(ui.star?'1':'0'))return;labId=id;l.dataset.k=ui.star?'1':'0';l.style.opacity=1;l.innerHTML=ui.star?'<small style="margin:0">★重要のみ</small>':''};if(now){f();return}l.style.opacity=.35;labT=setTimeout(f,90)}
 function centerChip(){var c=$('#chips');if(!c)return null;var r=c.getBoundingClientRect(),cx=r.left+r.width/2,best=null,bd=1e9;c.querySelectorAll('.chip').forEach(function(e){var q=e.getBoundingClientRect(),d=Math.abs(q.left+q.width/2-cx);if(d<bd){bd=d;best=e}});return best}
 var lastCtr=null;
 function dial(){var c=$('#chips');if(!c)return;var r=c.getBoundingClientRect(),cx=r.left+r.width/2;c.querySelectorAll('.chip.ci').forEach(function(e){var q=e.getBoundingClientRect(),w=q.width/(parseFloat(e.dataset.sc)||1),d=Math.abs(q.left+q.width/2-cx),t=Math.min(d/110,1),sc=1.26-t*.46;e.dataset.sc=sc;e.style.transform='scale('+sc.toFixed(3)+')';e.style.opacity=(1-t*.5).toFixed(2)})}
@@ -690,20 +696,20 @@ function swapList(fn,kind,dir){var L=$('#list');
  if(!L||!L.animate||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){fn();return}
  if(L._pend){var pf=L._pend;L._pend=null;pf()}
  (L.getAnimations?L.getAnimations():[]).forEach(function(x){try{x.cancel()}catch(e){}});
- var d=kind==='h'?24*dir:0;
- var out=L.animate([{opacity:1,transform:'none'},{opacity:0,transform:kind==='h'?'translateX('+(-d)+'px)':'scale(.985)'}],{duration:110,easing:'ease-in',fill:'forwards'});
+ var d=kind==='h'?16*dir:0;
+ var out=L.animate([{opacity:1,transform:'none'},{opacity:.4,transform:kind==='h'?'translateX('+(-d*.6)+'px)':'scale(.992)'}],{duration:90,easing:'ease-in',fill:'forwards'});
  L._pend=function(){fn()};
  out.onfinish=function(){if(!L._pend)return;var f=L._pend;L._pend=null;f();
-  var inn=L.animate([{opacity:0,transform:kind==='h'?'translateX('+d+'px)':'translateY('+(kind==='back'?14:6)+'px)'},{opacity:1,transform:'none'}],{duration:280,easing:'cubic-bezier(.2,.8,.2,1)'});out.cancel()}}
+  var inn=L.animate([{opacity:.4,transform:kind==='h'?'translateX('+d+'px)':'translateY('+(kind==='back'?10:4)+'px)'},{opacity:1,transform:'none'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});out.cancel()}}
 function goCat(id){if(ui.cat===id)return;var from=ui.cat;if(id==='cal')ui.calBack=ui.cat;ui.cat=id;ui.sub=null;ui.reg=null;ui.gen=null;ui.view='list';ui.day=null;
  var kind=id==='cal'?'cal':(from==='cal'?'back':'h'),fi=catIdx(from),ti=catIdx(id),dir=(fi>=0&&ti>=0&&ti<fi)?-1:1;
  swapList(renderList,kind,dir);renderBar();updTabs();markChips()}
 function loopFix(){var c=$('#chips'),cc=centerChip();if(!c||!cc||!cc.classList.contains('cl'))return;var re=c.querySelector('.chip.ci:not(.cl)[data-c="'+cc.dataset.c+'"]');if(!re)return;var d=re.offsetLeft-cc.offsetLeft;ps=Date.now()+300;c.style.scrollSnapType='none';c.scrollLeft+=d;setTimeout(function(){c.style.scrollSnapType=''},60)}
 function renderChips(){normCats();
  var cnt={};items.forEach(function(it){cnt[it.cat]=(cnt[it.cat]||0)+1});
- var h='<button class="chip ci ng" style="--c:#8a8496" data-c="all" aria-label="すべて"><span class="ico">'+IC_ALL+'</span></button>';
+ var h='<button class="chip ci ng" style="--c:#8a8496" data-c="all" aria-label="すべて"><span class="ico">'+IC_ALL+'</span><span class="lb2">すべて</span></button>';
  var cl=cats.filter(function(c){return !(c.id==='none'&&!cnt.none)});cl=cl.filter(function(c){return c.fav}).concat(cl.filter(function(c){return !c.fav}));
- cl.forEach(function(c){h+='<button class="chip ci" style="--c:'+esc(c.c)+'" data-c="'+esc(c.id)+'" data-cc="1" aria-label="'+esc(c.n)+'">'+ico(c,40)+(c.fav?'<span class="fv">★</span>':'')+(cnt[c.id]?'<span class="bd2">'+(cnt[c.id]>99?'99+':cnt[c.id])+'</span>':'')+'</button>'});
+ cl.forEach(function(c){h+='<button class="chip ci" style="--c:'+esc(c.c)+'" data-c="'+esc(c.id)+'" data-cc="1"'+(Array.from(c.n).length>5?' data-ln="1"':'')+' aria-label="'+esc(c.n)+'">'+ico(c,40)+(c.fav?'<span class="fv">★</span>':'')+(cnt[c.id]?'<span class="bd2">'+(cnt[c.id]>99?'99+':cnt[c.id])+'</span>':'')+'<span class="lb2">'+esc(c.n)+'</span></button>'});
  var hc=h.replace(/class="chip ci/g,'class="chip cl ci').replace(/ data-cc="1"/g,'');
  $('#chips').innerHTML=hc+h+hc;updTabs();markChips($('#chips .chip.ci:not(.cl)')&&($('#chips .chip.ci:not(.cl)[data-c="'+ui.cat+'"]')||null));scrollToCur(false);setLab(ui.cat,1);
  var sub=$('#sub');sub.innerHTML='';sub.style.display='none';renderBar()}
