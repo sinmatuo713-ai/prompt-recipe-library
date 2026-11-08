@@ -500,6 +500,39 @@ html[data-theme="dark"] .wk .c.t b{color:#241f33}
 html[data-theme="dark"] .wk .ev{color:#1e1b24}
 .wk .dt{position:absolute;bottom:6px;width:7px;height:7px;border-radius:50%;background:var(--c);pointer-events:none}
 .trx{margin-top:6px}.trx .trt{font-size:16px;font-weight:800;margin:6px 0 4px}.trx h4{margin:16px 0 6px;font-size:14px;font-weight:800;color:var(--accent-text)}.trx p{margin:0 0 6px;font-size:14.5px;line-height:1.75}.trx p.nt{color:var(--muted);font-size:12.5px}
+
+#list.g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#list.g.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+#list.g>:not(.sw){grid-column:1/-1}
+#list.g .sw.gt{margin:0;border-radius:14px}
+#list.g .gh{margin:12px 4px 0}
+.sw .card.gc{display:block;padding:0;aspect-ratio:1;border-left:0;border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--c) 18%,var(--card));box-shadow:var(--shadow);touch-action:pan-y}
+.card.gc.pin{box-shadow:inset 0 0 0 2px #ecc25a,var(--shadow)}
+.gc>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--accent-soft)}
+.gc .gfb{position:absolute;inset:0;display:grid;place-items:center;opacity:.9}
+.gc::after{content:'';position:absolute;left:0;right:0;bottom:0;height:50%;background:linear-gradient(transparent,#000a);pointer-events:none}
+.gc .gt2,.gc .gmo,.gc .gst,.gc .gd{z-index:1}
+.gc .gt2{position:absolute;left:0;right:0;bottom:0;padding:0 28px 5px 6px;box-sizing:border-box;max-height:calc(2.6em + 5px);font-size:11px;font-weight:700;line-height:1.3;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all;pointer-events:none;text-shadow:0 1px 2px #0008}
+.gc .gmo{position:absolute;right:0;bottom:0;width:30px;height:30px;border:0;background:none;color:#fff;display:grid;place-items:center;padding:0}
+.gc .gmo svg{width:16px;height:16px;fill:currentColor;filter:drop-shadow(0 1px 2px #0009)}
+.gc .gst{position:absolute;right:3px;top:3px;width:24px;height:24px;border:0;border-radius:50%;background:#0006;color:#ffd75e;font-size:14px;padding:0;display:grid;place-items:center}
+.gc .gd{position:absolute;left:4px;top:4px;font-size:10.5px;font-weight:800;line-height:1;padding:3px 6px;border-radius:99px;background:var(--c);color:#fff;text-shadow:0 1px 0 #0003}
+.gc .gcat{position:absolute;left:4px;bottom:34px;width:20px;height:20px;border-radius:50%;background:#ffffffd9;display:grid;place-items:center}
+.gc .ck{position:absolute;left:5px;top:5px;z-index:3}
+.lmore{display:block;width:100%;margin:6px 0;min-height:40px;border-radius:12px;border:1.5px dashed var(--line);background:none;color:var(--accent-text);font-weight:700;font-size:13px}
+.sw .card.cr{padding:7px 4px 7px 10px;gap:9px;align-items:center;border-left:4px solid var(--c)}
+.sw:has(.card.cr){margin:4px 0;border-radius:12px}
+.cr .cri{flex:none;width:26px;display:grid;place-items:center}
+.cr .crb{flex:1;min-width:0}
+.cr .crt{font-weight:700;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr .crm{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr .cdb{font-size:11px;padding:4px 8px}
+.cr .stb.mo{position:static!important;width:30px;height:30px;flex:none;margin:0}
+body.calmode .gh{margin:10px 6px 1px}
+body.calmode .strip button{padding:3px 0}
+body.calmode .stripn{margin:0 4px}
+body.calmode .ctb{margin-bottom:2px}
+body.calmode .wk .c{min-height:44px!important}
 </style>
 </head>
 <body>
@@ -527,7 +560,7 @@ html[data-theme="dark"] .wk .ev{color:#1e1b24}
 <script>
 (function(){
 'use strict';
-var VER='later v3.39',DATE='2026-10-23 19:50';
+var VER='later v3.40',DATE='2026-11-08 17:10';
 var KI='later_items_v1',KC='later_cats_v1',KT='later_theme',KB='later_last_backup';
 var $=function(s,r){return (r||document).querySelector(s)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -920,7 +953,7 @@ var WD=['日','月','火','水','木','金','土'];
 function fmtD(ts){var d=new Date(ts);return (d.getMonth()+1)+'/'+d.getDate()}
 
 /* ---- ui state ---- */
-var ui={sort:null,cat:'all',sub:null,q:'',view:'list',cv:'now',rad:1,pos:null,cm:null,day:null};ui.sort=lsGet('later_sort',null);ui.hend=!!lsGet('later_hend',false);
+var ui={sort:null,cat:'all',sub:null,q:'',view:'list',cv:'now',rad:1,pos:null,cm:null,day:null};ui.sort=lsGet('later_sort',null);ui.hend=!!lsGet('later_hend',false);ui.lay=lsGet('later_lay','list')==='grid'?'grid':'list';
 function facetVal(it,key){if(key==='g')return [gOf(it)];if(key==='tags')return (it.tags||[]);var v=(it.f||{})[key];return v?[v]:[]}
 function matches(it){
  if(ui.cat!=='all'&&it.cat!==ui.cat)return false;
@@ -987,14 +1020,16 @@ function renderBar(){var bar=$('#fbar');if(ui.cat==='cal'){bar.className='off';b
  var sl=(sortOpts().filter(function(o){return o[0]===curSort()})[0]||['','新しい順'])[1];
  var b=function(k,t,on){return '<button type="button" data-f="'+k+'" class="'+(on?'on':'')+'">'+esc(t)+' ▾</button>'};
  var h='';
+ var LI={list:'<path d="M8 7h12M8 12h12M8 17h12"/><circle cx="4.2" cy="7" r=".9"/><circle cx="4.2" cy="12" r=".9"/><circle cx="4.2" cy="17" r=".9"/>',grid:'<rect x="3.5" y="3.5" width="4.5" height="4.5" rx="1.2"/><rect x="9.75" y="3.5" width="4.5" height="4.5" rx="1.2"/><rect x="16" y="3.5" width="4.5" height="4.5" rx="1.2"/><rect x="3.5" y="9.75" width="4.5" height="4.5" rx="1.2"/><rect x="9.75" y="9.75" width="4.5" height="4.5" rx="1.2"/><rect x="16" y="9.75" width="4.5" height="4.5" rx="1.2"/><rect x="3.5" y="16" width="4.5" height="4.5" rx="1.2"/><rect x="9.75" y="16" width="4.5" height="4.5" rx="1.2"/><rect x="16" y="16" width="4.5" height="4.5" rx="1.2"/>'},LB={list:'リスト表示',grid:'サムネ一覧'};
+ var layH=(ui.cat==='cinema'||ui.cat==='bjd')?'':'<span class="vg lay">'+['list','grid'].map(function(k){return '<button type="button" data-lay="'+k+'" aria-label="'+LB[k]+'" class="'+(ui.lay===k?'on':'')+'"><svg viewBox="0 0 24 24">'+LI[k]+'</svg></button>'}).join('')+'</span><i class="dv"></i>';
  if(ui.cat==='shop'){var VI={list:'<path d="M8 7h12M8 12h12M8 17h12"/><circle cx="4.200" cy="7" r=".9"/><circle cx="4.200" cy="12" r=".9"/><circle cx="4.200" cy="17" r=".9"/>',area:'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',near:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.500"/><path d="M12 2.500v3M12 18.500v3M2.500 12h3M18.500 12h3"/>'},VL={list:'一覧',area:'エリア別',near:'近く'};
   h+='<span class="vg">'+['list','area','near'].map(function(k){return '<button type="button" data-vv="'+k+'" aria-label="'+VL[k]+'" class="'+(ui.view===k?'on':'')+'"><svg viewBox="0 0 24 24">'+VI[k]+'</svg></button>'}).join('')+'</span><i class="dv"></i>';
   h+=b('reg',ui.reg?'場所：'+ui.reg:'場所',!!ui.reg);if(ui.reg)h+=b('area',ui.sub?ui.sub:'エリア',!!ui.sub);h+=b('gen',ui.gen?ui.gen:'種類',!!ui.gen)}
  else if(ui.cat!=='all'&&ui.cat!=='sale'){if(glOf(ui.cat))h+='<button type="button" data-f="gedit" class="gi" aria-label="ジャンルを編集"><svg viewBox="0 0 24 24"><path d="M3.500 12.200V4.500a1 1 0 0 1 1-1h7.700a1 1 0 0 1 .7.300l7.600 7.600a1 1 0 0 1 0 1.400l-7.700 7.700a1 1 0 0 1-1.400 0l-7.600-7.600a1 1 0 0 1-.3-.7z"/><circle cx="8" cy="8" r="1.200" fill="currentColor"/></svg></button>'+b('fac',ui.sub?ui.sub:'ジャンル',!!ui.sub);else h+=b('fac',ui.sub?ui.sub:facetLabel(),!!ui.sub)}
  if(ui.cat==='event'){var EL={now:'🟢 いま行ける',today:'今日',run:'開催中（期間あり）',one:'1日だけ',soon:'これから'};h=b('evf',ui.evf?EL[ui.evf]:'表示',!!ui.evf)+h}
  if(ui.cat!=='all'&&/^(event|sale|movie)$/.test(ui.cat)){var ne0=items.filter(function(it){return it.cat===ui.cat&&isEnded(it)}).length;if(ne0)h+=b('hend',(ui.hend?'終了も表示':'終了を隠す')+'（'+ne0+'）',!!ui.hend).replace(' ▾','')}
- if(!h){bar.className='off';bar.innerHTML='';return}
- bar.innerHTML=h}
+ if(!h&&!layH){bar.className='off';bar.innerHTML='';return}
+ bar.innerHTML=layH+h}
 var pop=null;
 function closePop(){if(pop){pop.remove();pop=null}}
 function openPop(btn,opts,cur,pick){var same=pop&&pop.dataset.f===btn.dataset.f;closePop();if(same)return;var r=btn.getBoundingClientRect();
@@ -1007,7 +1042,7 @@ function shopCounts(){var sh=items.filter(function(it){return it.cat==='shop'}),
  sh.forEach(function(it){var r=regOf(it);rc[r]=(rc[r]||0)+1;if((!ui.reg||ui.reg===r)&&(!ui.sub||shopArea(it)===ui.sub)){ng++;var g=genreOf(it);gc[g]=(gc[g]||0)+1}
   if(ui.reg&&r===ui.reg){var a=shopArea(it);am[a]=(am[a]||0)+1}});return {rc:rc,gc:gc,am:am,n:n,ng:ng}}
 $('.top').addEventListener('click',function(e){var b=e.target.closest('#bSort');if(!b)return;openPop(b,sortOpts(),curSort(),function(v){ui.sort=v;lsSet('later_sort',v);render()})});
-$('#fbar').addEventListener('click',function(e){var vv=e.target.closest('[data-vv]');if(vv){closePop();ui.view=vv.dataset.vv;renderList();renderBar();return}var b=e.target.closest('[data-f]');if(!b)return;var k=b.dataset.f;
+$('#fbar').addEventListener('click',function(e){var ly=e.target.closest('[data-lay]');if(ly){closePop();ui.lay=ly.dataset.lay;lsSet('later_lay',ui.lay);render();renderBar();return}var vv=e.target.closest('[data-vv]');if(vv){closePop();ui.view=vv.dataset.vv;renderList();renderBar();return}var b=e.target.closest('[data-f]');if(!b)return;var k=b.dataset.f;
  if(k==='gedit'){closePop();openGenreEdit(ui.cat);return}
  if(k==='evf'){var cn={all:0,now:0,today:0,run:0,one:0,soon:0};items.filter(function(it){return it.cat==='event'&&!(ui.hend&&isEnded(it))}).forEach(function(it){var g=evGroup(it);cn.all++;if(isOpenNow(it,false))cn.now++;if(g===0)cn.today++;if(isRange(it)&&(g===0||g===1))cn.run++;if(!isRange(it))cn.one++;if(g===2)cn.soon++});openPop(b,[['','すべて',cn.all],['now','🟢 いま行ける',cn.now],['today','今日',cn.today],['run','開催中（期間あり）',cn.run],['one','1日だけ',cn.one],['soon','これから',cn.soon]],ui.evf||'',function(v){ui.evf=v||'';render()});return}
  if(k==='hend'){closePop();ui.hend=!ui.hend;lsSet('later_hend',ui.hend);render();return}
@@ -1127,6 +1162,35 @@ function openRemind(it){var L=remOpts(it),f=it.f||{};
   var mv=t.closest('[data-mv]');if(mv){S.m+=+mv.dataset.mv;if(S.m<0){S.m=11;S.y--}if(S.m>11){S.m=0;S.y++}draw();return}
   var dd=t.closest('[data-d]');if(dd){S.d=dd.dataset.d;draw()}})}
 function card(it){
+ if(ui.cat==='cal')return crow(it);
+ if(ui.lay==='grid'&&it.cat!=='cinema'&&it.cat!=='bjd')return gcard(it);
+ return cardL(it)}
+function gridCols(){var w=($('#list')||{}).clientWidth||innerWidth;return w>=520?4:3}
+function gcard(it){
+ var c=ccOf(it),f=it.f||{},isShot=it.src==='shot',date=f.date,end=date&&f.end&&f.end>date?f.end:null;
+ var imgs=it.imgs&&it.imgs.length?it.imgs:(it.img?[it.img]:[]);
+ var ttl=isShot?(it.name||f.name||(it.title||'').slice(0,30)||'スクショ'):(f.name||it.title||it.sum||it.author||host(it.url)||'(無題)');
+ if(/^https?:\/\//.test(ttl))ttl=host(ttl)||'(無題)';
+ var L=$('#list'),cols=gridCols(),S=Math.floor(((L&&L.clientWidth)||innerWidth-32)-(cols-1)*8)/cols;S=Math.max(80,Math.floor(S));
+ var m='';
+ if(imgs.length){var cr=isShot&&it.crops&&it.crops[0];m='<img decoding="async" referrerpolicy="no-referrer" src="'+esc(imgs[0])+'" alt=""'+(cr?' style="'+cropStyle(cr,S)+'"':'')+' onerror="this.remove()">'}
+ var fb='<span class="gfb">'+ico(c,34)+'</span>';
+ var tag=(ui.cat==='all'?'<span class="gcat" style="--c:'+esc(c.c)+'">'+ico(c,13)+'</span>':'');
+ var dchip=date?'<span class="gd">'+md(date)+(end?'〜':'')+'</span>':'';
+ return '<div class="sw gt" data-id="'+it.id+'"><div class="card gc'+(ui.sel&&ui.sel[it.id]?' sel':'')+(it.star?' pin':'')+(isEnded(it)?' ended':'')+'" data-id="'+it.id+'" style="--c:'+c.c+'">'+
+  (ui.sel?'<span class="ck">'+IC_CHK+'</span>':'')+fb+m+tag+dchip+(it.star?'<button class="gst" data-a="star" type="button" aria-label="重要">★</button>':'')+
+  '<span class="gt2">'+esc(ttl)+'</span><button class="gmo" data-a="more" type="button" aria-label="メニュー"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="18.5" cy="12" r="1.9"/></svg></button></div></div>'}
+function crow(it){
+ var c=ccOf(it),f=it.f||{},date=f.date,end=date&&f.end&&f.end>date?f.end:null,isShot=it.src==='shot';
+ var ttl=isShot?(it.name||f.name||(it.title||'').slice(0,30)||'スクショ'):(f.name||it.title||it.sum||it.author||host(it.url)||'(無題)');
+ if(/^https?:\/\//.test(ttl))ttl=host(ttl)||'(無題)';
+ var tm=f.time?(f.until&&/^\d{1,2}[:：]\d{2}$/.test(String(f.time).trim())?String(f.time).trim()+'〜'+f.until:fmtT(f.time)):'';
+ var sub=[];if(date)sub.push(md(date)+'（'+wd(date)+'）'+(end?'〜'+md(end):''));if(tm)sub.push(tm);if(ui.cc==null)sub.push(c.n);
+ var cdb=date?cdBadge(it,date,end):'';
+ return '<div class="sw" data-id="'+it.id+'"><div class="card cr'+(ui.sel&&ui.sel[it.id]?' sel':'')+(it.star?' pin':'')+(isEnded(it)?' ended':'')+'" data-id="'+it.id+'" style="--c:'+c.c+'">'+(ui.sel?'<span class="ck">'+IC_CHK+'</span>':'')+
+  '<span class="cri">'+ico(c,20)+'</span><div class="crb"><div class="crt">'+esc(ttl)+'</div><div class="crm">'+esc(sub.join(' ・ '))+'</div></div>'+cdb+
+  '<button class="stb mo" data-a="more" aria-label="メニュー" type="button"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="18.5" cy="12" r="1.9"/></svg></button></div></div>'}
+function cardL(it){
  if(it.cat==='cinema')return cinCard(it);
  if(it.cat==='bjd')return bjdCard(it);
  var c=ccOf(it),f=it.f||{},d=cdef(it.cat),date=f.date;
@@ -1190,14 +1254,14 @@ function calView(){
  var all=ui.cc?all0.filter(function(it){return it.cat===ui.cc}):all0;
  h+='<div class="ctb"><div class="seg2"><button type="button" data-cv="now" class="'+(ui.cv==='now'?'on':'')+'">リスト</button><button type="button" data-cv="month" class="'+(ui.cv==='month'?'on':'')+'">月</button></div>'+
   '<button type="button" class="cpl'+(ui.cc?'':' on')+'" data-cc2="" aria-label="すべて"><span class="gi">'+IC_ALL.replace(/<svg[^>]*>/,'<svg viewBox="0 0 24 24">')+'</span></button>'+
-  cats.filter(function(c){return cc[c.id]}).map(function(c){var on=ui.cc===c.id;return '<button type="button" class="cpl'+(on?' on':'')+'" style="--c:'+esc(c.c)+'" data-cc2="'+esc(c.id)+'" aria-label="'+esc(c.n)+'">'+ico(c,26)+'</button>'}).join('')+'</div><div class="cfl2">'+(ui.cc?'<b style="color:'+esc(cat(ui.cc).c)+'">'+esc(cat(ui.cc).n)+'</b> のみ表示中':'すべてのカテゴリー')+'</div>';
+  cats.filter(function(c){return cc[c.id]}).map(function(c){var on=ui.cc===c.id;return '<button type="button" class="cpl'+(on?' on':'')+'" style="--c:'+esc(c.c)+'" data-cc2="'+esc(c.id)+'" aria-label="'+esc(c.n)+'">'+ico(c,26)+'</button>'}).join('')+'</div>'+(ui.cc?'<div class="cfl2"><b style="color:'+esc(cat(ui.cc).c)+'">'+esc(cat(ui.cc).n)+'</b> のみ表示中</div>':'');
  if(ui.cv==='now'){
   h+=weekStrip(all,tdy);
   if(ui.day){var dl0=all.filter(function(it){return it.f.date<=ui.day&&endOf(it)>=ui.day});return h+'<div class="gh">'+md(ui.day)+'（'+WD[new Date(ui.day.replace(/-/g,'/')).getDay()]+'） <b>'+dl0.length+'件</b></div>'+(dl0.length?dl0.sort(function(a,b){return cmpT(a,b,ui.day)}).map(card).join(''):'<div class="note" style="text-align:center;margin:14px 0">この日の予定はありません</div>')}
   var list=all.filter(function(it){return endOf(it)>=tdy}),on=list.filter(function(it){return it.f.date<=tdy}).sort(function(x,y){return cmpT(x,y,tdy)}),
    soon=list.filter(function(it){return it.f.date>tdy&&daysTo(it.f.date)<=7}).sort(cmpT),
    later=list.filter(function(it){return it.f.date>tdy&&daysTo(it.f.date)>7}).sort(cmpT);
-  [['いま開催中・今日',on],['7日以内',soon],['それ以降',later]].forEach(function(s){if(s[1].length)h+='<div class="gh">'+s[0]+'<b>'+s[1].length+'件</b></div>'+s[1].map(card).join('')});
+  [['いま開催中・今日',on],['7日以内',soon],['それ以降',later]].forEach(function(s,gi){if(!s[1].length)return;var L=s[1],more='';if(gi===2&&!ui.lm&&L.length>8){more='<button type="button" class="lmore" data-lm="1">ほか '+(L.length-8)+'件を表示 ▾</button>';L=L.slice(0,8)}h+='<div class="gh">'+s[0]+'<b>'+s[1].length+'件</b></div>'+L.map(card).join('')+more});
   if(!list.length)h+='<div class="empty"><b>予定はありません</b>イベント・通販開始・映画に日付が入ると、ここに出ます。</div>';
   return h}
  var now=new Date(),cm=ui.cm||(ui.cm={y:now.getFullYear(),m:now.getMonth()});
@@ -1231,7 +1295,7 @@ function openShop(u){var tb=/^https?:\/\/([^\/]*\.)?(tb\.cn|taobao\.com|tmall\.c
  var hid=false,hf=function(){if(document.hidden)hid=true};document.addEventListener('visibilitychange',hf);toast('淘宝アプリを開きます…');
  location.href='taobao://'+u.replace(/^https?:\/\//,'');
  setTimeout(function(){document.removeEventListener('visibilitychange',hf);if(!hid&&!document.hidden)window.open(u,'_blank','noopener')},1800)}
-function renderList(){renderList0();if(ui.cat==='bjd')$('#list').insertAdjacentHTML('afterbegin',tdLine('')+'<button class="cadd" type="button" data-bjdadd="1"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>追加</button>');
+function renderList(){layCls();renderList0();if(ui.cat==='bjd')$('#list').insertAdjacentHTML('afterbegin',tdLine('')+'<button class="cadd" type="button" data-bjdadd="1"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>追加</button>');
  if(ui.cat==='cinema'){ui.cs=cinSig();
  if(cfg()){var w0=!CIN||Date.now()-CINt>=18e5;var pr=cinLoad(false);if(w0)cinSpin(true);var fin=function(){cinSpin(false);if(ui.cat==='cinema'&&cinSig()!==ui.cs)renderList();else cinRefresh()};pr.then(fin,fin)}
  $('#list').insertAdjacentHTML('afterbegin',tdLine('の上映時刻'+(CIN&&CIN.date&&CIN.date!==todayS()?'（取得は '+md(CIN.date)+' 分・更新ボタンで最新に）':''),cinSite())+'<button class="cadd" type="button" data-cinadd="1"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>観たい映画を追加</button>')}}
@@ -1250,6 +1314,7 @@ function renderList0(){$('#list')._tk=($('#list')._tk||0)+1;
   var hh='';G.forEach(function(L,gi){if(L.length)hh+='<div class="gh">'+NM[gi]+'<b>'+L.length+'件</b></div>'+L.map(card).join('')});$('#list').innerHTML=hh;return}
  paintCards(a)}
 function render(){renderChips();renderList()}
+function layCls(){var L=$('#list');if(L)L.classList.toggle('g',ui.lay==='grid'&&ui.cat!=='cal'&&ui.cat!=='cinema'&&ui.cat!=='bjd'&&(ui.cat!=='shop'||ui.view==='list'));if(L)L.classList.toggle('c4',gridCols()===4)}
 
 /* ---- toast / dialog ---- */
 var tt=null;
@@ -1703,7 +1768,7 @@ var sw={el:null,x0:0,y0:0,dx:0,mode:0,open:null,lp:null,base:0,sup:0};
 function closeOpen(){if(sw.open){sw.open.style.translate='0 0';sw.open=null}}
 function itemOf(id){return items.filter(function(x){return x.id===id})[0]}
 var LST=$('#list');
-LST.addEventListener('touchstart',function(e){if(ui.sel)return;var c=e.target.closest('.sw .card');if(!c||e.touches.length>1)return;if(e.target.closest('[data-a]'))return;var tl0=e.target.closest('.tiles,.chp,.cts');if(tl0&&tl0.scrollWidth>tl0.clientWidth+2)return;
+LST.addEventListener('touchstart',function(e){if(ui.sel)return;var c=e.target.closest('.sw .card');if(!c||e.touches.length>1||c.classList.contains('gc'))return;if(e.target.closest('[data-a]'))return;var tl0=e.target.closest('.tiles,.chp,.cts');if(tl0&&tl0.scrollWidth>tl0.clientWidth+2)return;
  if(sw.open&&sw.open!==c)closeOpen();
  sw.el=c;sw.x0=e.touches[0].clientX;sw.y0=e.touches[0].clientY;sw.dx=0;sw.mode=0;sw.base=sw.open===c?150:0;
  clearTimeout(sw.lp);sw.lp=setTimeout(function(){if(sw.mode===0&&sw.el){var it=itemOf(sw.el.dataset.id);sw.mode=3;sw.sup=Date.now();try{navigator.vibrate&&navigator.vibrate(8)}catch(x){}if(it)openEdit(it)}},520)},{passive:true});
@@ -1729,6 +1794,7 @@ $('#list').addEventListener('click',function(e){
  if((b=t.closest('[data-wk]'))){ui.wk=(ui.wk||0)+ +b.dataset.wk;ui.day=null;renderList();return}
  if((b=t.closest('[data-wday]'))){ui.day=ui.day===b.dataset.wday?null:b.dataset.wday;renderList();return}
  if((b=t.closest('[data-cc2]'))){ui.cc=b.dataset.cc2||null;ui.day=null;renderList();return}
+ if(t.closest('[data-lm]')){ui.lm=1;renderList();return}
  if((b=t.closest('[data-cv]'))){ui.cv=b.dataset.cv;renderList();return}
  if((b=t.closest('[data-rad]'))){ui.rad=+b.dataset.rad;renderList();return}
  if(t.closest('[data-cinadd]')){cinAdd();return}
